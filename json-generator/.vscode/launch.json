@@ -1,0 +1,108 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            // "args": ["C:\\Users\\Guiga\\Workspace\\raylib\\survivors\\survivors\\src"],
+            "args": ["source"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build/debug",
+            "environment": [],
+            "externalConsole": false,
+            "program": "${workspaceFolder}/build/debug/json-generator.exe",
+            "windows": {
+                "program": "${workspaceFolder}/build/debug/json-generator.exe",
+                "MIMode": "gdb",
+                "miDebuggerPath": "${env:MINGWPATH}/gdb.exe"
+            },
+            "osx": {
+                "program": "${workspaceFolder}/build/debug/json-generator",
+                "MIMode": "lldb",
+                "targetArchitecture": "arm64"
+            },
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "Build Debug"
+        },
+        {
+            "name": "Clean Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build/debug",
+            "environment": [],
+            "externalConsole": false,
+            "program": "${workspaceFolder}/build/debug/json-generator.exe",
+            "windows": {
+                "program": "${workspaceFolder}/build/debug/json-generator.exe",
+                "MIMode": "gdb",
+                "miDebuggerPath": "${env:MINGWPATH}/gdb.exe"
+            },
+            "osx": {
+                "program": "${workspaceFolder}/build/debug/json-generator",
+                "MIMode": "lldb",
+                "targetArchitecture": "arm64"
+            },
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "Clean Debug"
+        },
+        {
+            "name": "Run Tests",
+            "type": "cppdbg",
+            "request": "launch",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build/tests",
+            "environment": [],
+            "externalConsole": false,
+            "program": "${workspaceFolder}/build/tests/json-generator",
+            "windows": {
+                "program": "${workspaceFolder}/build/tests/json-generator.exe",
+                "MIMode": "gdb",
+                "miDebuggerPath": "${env:MINGWPATH}/gdb.exe"
+            },
+            "osx": {
+                "program": "${workspaceFolder}/build/tests/json-generator",
+                "MIMode": "lldb",
+                "targetArchitecture": "arm64"
+            },
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "Build Tests"
+        }
+    ]
+}

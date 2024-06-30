@@ -1,0 +1,150 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Clean",
+            "type": "shell",
+            "command": "mingw32-make",
+            "args": [
+                "clean"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [],
+            "windows": {
+                "command": "${env:MINGWPATH}/mingw32-make"
+            },
+            "osx": {
+                "command": "make"
+            }
+        },
+        {
+            "label": "Build Debug",
+            "type": "shell",
+            "command": "mingw32-make",
+            "args": [
+                "BUILD_TYPE=debug"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "windows": {
+                "command": "${env:MINGWPATH}/mingw32-make"
+            },
+            "osx": {
+                "command": "make"
+            }
+        },
+        {
+            "label": "Clean Debug",
+            "type": "shell",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Clean",
+                "Build Debug"
+            ]
+        },
+        {
+            "label": "Build Release",
+            "type": "shell",
+            "command": "mingw32-make",
+            "args": [
+                "BUILD_TYPE=release"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "windows": {
+                "command": "${env:MINGWPATH}/mingw32-make"
+            },
+            "osx": {
+                "command": "make"
+            }
+        },
+        {
+            "label": "Build Tests",
+            "type": "shell",
+            "command": "mingw32-make",
+            "args": [
+                "BUILD_TYPE=tests"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "windows": {
+                "command": "${env:MINGWPATH}/mingw32-make"
+            },
+            "osx": {
+                "command": "make"
+            }
+        },
+        {
+            "label": "Run Debug",
+            "type": "shell",
+            "command": "${workspaceFolder}/build/debug/json-generator",
+            "args": [],
+            "group": {
+                "kind": "test",
+                "isDefault": false
+            },
+            "problemMatcher": [],
+            "dependsOn": "Build Debug",
+            "windows": {
+                "command": "${workspaceFolder}/build/debug/json-generator.exe"
+            },
+            "osx": {
+                "command": "${workspaceFolder}/build/debug/json-generator"
+            }
+        },
+        {
+            "label": "Run Release",
+            "type": "shell",
+            "command": "${workspaceFolder}/build/release/json-generator",
+            "args": [],
+            "group": {
+                "kind": "test",
+                "isDefault": false
+            },
+            "problemMatcher": [],
+            "dependsOn": "Build Release",
+            "windows": {
+                "command": "${workspaceFolder}/build/release/json-generator.exe"
+            },
+            "osx": {
+                "command": "${workspaceFolder}/build/release/json-generator"
+            }
+        },
+        {
+            "label": "Run Tests",
+            "type": "shell",
+            "command": "${workspaceFolder}/build/tests/json-generator",
+            "args": [],
+            "group": {
+                "kind": "test",
+                "isDefault": false
+            },
+            "problemMatcher": [],
+            "dependsOn": "Build Tests",
+            "windows": {
+                "command": "${workspaceFolder}/build/tests/json-generator.exe"
+            },
+            "osx": {
+                "command": "${workspaceFolder}/build/tests/json-generator"
+            }
+        }
+    ]
+}

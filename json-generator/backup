@@ -1,0 +1,114 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "cJSON.h"
+
+{% for h in headers %}#include "{{h}}"
+{% end %}
+{% for s in structs %}int parse_{{s.name}}(cJSON *node, {{s.type}} *output)
+{
+    {% if s.is_array %}
+
+    cJSON *child_node = node->child;
+
+    size_t len = cJSON_GetArraySize(node);
+
+    {{s.items.type}} *items = SV_MALLOC(sizeof({{s.items.type}}) * len, "{{s.items.type}}");
+
+    int i = 0;
+    while(child_node)
+    {
+        {% if s.items.is_int %}if (!cJSON_IsNumber(child_node))
+        {
+            return -1;
+        }
+
+        items[i] = child_node->valueint;
+        {% end %}{% if s.items.is_float %}
+        if (!cJSON_IsNumber(child_node))
+        {
+            return -1;
+        }
+
+        items[i] = child_node->valuedouble;
+        {% end %}{% if s.items.is_bool %}if (!cJSON_IsBool(child_node))
+        {
+            return -1;
+        }
+
+        items[i] = child_node->valueint;
+        {% end %}{% if s.items.is_string %}if (!cJSON_IsString(child_node))
+        {
+            return -1;
+        }
+
+        items[i] = strdup(child_node->valuestring);
+        {% end %}{% if s.items.is_object %}if (!cJSON_IsObject(child_node))
+        {
+            return -1;
+        }
+
+        {{s.items.type}} {{s.items.name}};
+        if(parse_{{s.items.type_name}}(child_node, &{{s.items.name}}) != 0)
+        {
+            return -1;
+        }
+        
+        items[i] = {{s.items.name}};
+        {% end %}
+        child_node = child_node->next;
+    }
+
+    output->{{s.items.name}} = items;
+    output->{{s.len.name}} = len;
+
+    {% else %}
+    
+    {% for f in s.fields %}// Parsing {{f.name}}
+    
+    cJSON *{{f.name}}_node = cJSON_GetObjectItemCaseSensitive(node, "{{f.name}}");
+
+    {% if f.is_int %}if (!cJSON_IsNumber({{f.name}}_node))
+    {
+        return -1;
+    }
+
+    output->{{f.name}} = {{f.name}}_node->valueint;
+    {% end %}{% if f.is_float %}
+    if (!cJSON_IsNumber({{f.name}}_node))
+    {
+        return -1;
+    }
+
+    output->{{f.name}} = {{f.name}}_node->valuedouble;
+    {% end %}{% if f.is_bool %}if (!cJSON_IsBool({{f.name}}_node))
+    {
+        return -1;
+    }
+
+    output->{{f.name}} = {{f.name}}_node->valueint;
+    {% end %}{% if f.is_string %}if (!cJSON_IsString({{f.name}}_node))
+    {
+        return -1;
+    }
+
+    output->{{f.name}} = strdup({{f.name}}_node->valuestring);
+    {% end %}{% if f.is_object %}if (!cJSON_IsObject({{f.name}}_node))
+    {
+        return -1;
+    }
+
+    {{f.type}} {{f.name}};
+    if(parse_{{f.type_name}}({{f.name}}_node, &{{f.name}}) != 0)
+    {
+        return -1;
+    }
+    
+    output->{{f.name}} = {{f.name}};
+    {% end %}
+    {% end %}return 0;
+    
+    {% end %}
+}
+
+{% end %}

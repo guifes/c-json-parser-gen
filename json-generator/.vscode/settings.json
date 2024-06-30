@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "stdio.h": "c",
+        "parse_structs.h": "c",
+        "stat.h": "c",
+        "stb_ds.h": "c",
+        "tinytemplate.h": "c",
+        "stdbool.h": "c",
+        "api.h": "c",
+        "windows.h": "c",
+        "initializer_list": "c",
+        "xutility": "c",
+        "utility": "c"
+    }
+}
