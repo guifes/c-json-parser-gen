@@ -18,6 +18,7 @@ int main(int argc, char *argv[])
     }
 
     const char *header_dir = argv[1];
+    
     ParseResult result = {0};
 
     sh_new_arena(result.files);
