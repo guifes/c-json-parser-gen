@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
-#include "tinytemplate/tinytemplate.h"
+#include "tinytemplate.h"
 #include "stb_ds.h"
 #include "parse_structs.h"
 

@@ -6,6 +6,7 @@
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/**/src",
                 "${workspaceFolder}/../tree-sitter/lib/**",
+                "${workspaceFolder}/../tinytemplate/src/**",
             ],
             "defines": [
                 "_DEBUG",

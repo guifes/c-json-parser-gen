@@ -10,6 +10,7 @@ BUILD_DIR := $(WORKSPACE_FOLDER)/build/$(BUILD_TYPE)
 SRC_DIR := $(WORKSPACE_FOLDER)/src
 INCLUDE_DIR := $(WORKSPACE_FOLDER)/include
 TREE_SITTER_DIR := $(WORKSPACE_FOLDER)/../tree-sitter
+TINY_TEMPLATE_DIR := $(WORKSPACE_FOLDER)/../tinytemplate
 TESTS_DIR := $(WORKSPACE_FOLDER)/tests
 
 # Compiler and linker
@@ -24,7 +25,8 @@ CFLAGS := -std=c99 \
           -I$(SRC_DIR) \
           -I$(TESTS_DIR) \
           -I$(TREE_SITTER_DIR)\lib\src \
-          -I$(TREE_SITTER_DIR)\lib\include
+          -I$(TREE_SITTER_DIR)\lib\include \
+          -I$(TINY_TEMPLATE_DIR)\src
 LDFLAGS :=
 
 # Source files
@@ -65,8 +67,10 @@ ifeq ($(OS),Windows_NT)
     OUTPUT := $(BUILD_DIR)\json-generator.exe
     PLATFORM_ARGS := -L..\tree-sitter \
                      -L..\tree-sitter-c \
+                     -L..\tinytemplate \
                      -ltree-sitter \
                      -ltree-sitter-c \
+                     -ltinytemplate \
     
     MKDIR := if not exist "$(subst /,\,$(BUILD_DIR))" mkdir "$(subst /,\,$(BUILD_DIR))"
 else
@@ -75,7 +79,10 @@ else
         OUTPUT := $(BUILD_DIR)/json-generator
         PLATFORM_ARGS := -L../tree-sitter \
                          -L../tree-sitter-c \
+                         -L../tinytemplate \
                          -ltree-sitter \
+                         -ltree-sitter-c \
+                         -ltinytemplate \
                          -Wl
         MKDIR := mkdir -p $(BUILD_DIR)
     else
