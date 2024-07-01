@@ -14,12 +14,6 @@ typedef struct
 
 typedef struct
 {
-    FilePathHash *files;
-    int i;
-} FileHashIndex;
-
-typedef struct
-{
     Field *fields;
     int i;
 } FieldIndex;
@@ -32,7 +26,8 @@ typedef struct
 
 typedef struct
 {
-    ParseResult parse_data;
+    const char *header;
+    ParsedStructs parsed_structs;
     FILE *output;
 } UserData;
 
@@ -173,22 +168,6 @@ bool next_struct(void *data, tinytemplate_value_t *value)
     return true;
 }
 
-bool next_file(void *data, tinytemplate_value_t *value)
-{
-    FileHashIndex *index = (FileHashIndex *)data;
-
-    index->i++;
-
-    if (index->i >= shlen(index->files))
-    {
-        return false;
-    }
-
-    tinytemplate_set_string(value, index->files[index->i].key, strlen(index->files[index->i].key));
-
-    return true;
-}
-
 bool params_handler(void *data, const char *key, size_t len, tinytemplate_value_t *value)
 {
     UserData *user_data = (UserData *)data;
@@ -197,21 +176,16 @@ bool params_handler(void *data, const char *key, size_t len, tinytemplate_value_
     {
         StructHashIndex *index = malloc(sizeof(StructHashIndex));
 
-        index->structs = user_data->parse_data.structs;
+        index->structs = user_data->parsed_structs.structs;
         index->i = -1;
 
         tinytemplate_set_array(value, index, next_struct);
         return true;
     }
 
-    if (len == 7 && !strncmp(key, "headers", len))
+    if (len == 6 && !strncmp(key, "header", len))
     {
-        FileHashIndex *index = malloc(sizeof(FileHashIndex));
-
-        index->files = user_data->parse_data.file_paths;
-        index->i = -1;
-
-        tinytemplate_set_array(value, index, next_file);
+        tinytemplate_set_string(value, user_data->header, strlen(user_data->header));
         return true;
     }
 
@@ -255,32 +229,20 @@ Template load_template(const char *path)
 
     perror(message);
 
-    return (Template){
+    return (Template)
+    {
         .prog = prog,
-        .src = content};
+        .src = content
+    };
 }
 
-void format_code(const char *file_path)
-{
-    // Construct the command string to call clang-format
-    char command[256];
-    snprintf(command, sizeof(command), "clang-format -i %s", file_path);
-
-    // Call the command using system
-    int result = system(command);
-    if (result == -1)
-    {
-        perror("Failed to execute clang-format");
-    }
-    else
-    {
-        printf("File formatted successfully.\n");
-    }
-}
-
-void generate_code(const char *template_path, const char *output_path, ParseResult result)
+void generate_code(const char *template_path, const char *output_file, const char *header, ParsedStructs parsed_structs)
 {
     Template template = load_template(template_path);
+
+    const char *output_path = malloc(strlen(output_file) + 10 + 1);
+
+    sprintf((char *)output_path, "generated\\%s", output_file);
 
     FILE *file = fopen(output_path, "w+");
 
@@ -291,8 +253,10 @@ void generate_code(const char *template_path, const char *output_path, ParseResu
     }
 
     UserData user_data = {
-        .parse_data = result,
-        .output = file};
+        .header = header,
+        .parsed_structs = parsed_structs,
+        .output = file
+    };
 
     char message[128];
     tinytemplate_eval(
@@ -312,6 +276,12 @@ void generate_code(const char *template_path, const char *output_path, ParseResu
 
 void generate_parser_code(ParseResult result)
 {
-    generate_code("templates\\cJSON_header.tt", "generated\\LDtk_parsers.h", result);
-    generate_code("templates\\cJSON_implementation.tt", "generated\\LDtk_parsers.c", result);
+    for(int i = 0; i < shlen(result.files); i++)
+    {
+        const char *header = result.files[i].key;
+        ParsedStructs parsed_structs = result.files[i].value;
+
+        generate_code("templates\\cJSON_header.tt", "LDtk_parsers.h", header, parsed_structs);
+        generate_code("templates\\cJSON_implementation.tt", "LDtk_parsers.c", header, parsed_structs);
+    }
 }

@@ -195,7 +195,7 @@ bool parse_field(TSNode node, const char *source_code, Field *field)
     return true;
 }
 
-bool parse_struct(TSNode root_node, const char *source_code, ParseResult *parse_result, const char *error)
+bool parse_struct(TSNode root_node, const char *source_code, ParsedStructs *parsed_structs, const char *error)
 {
     const char *type_name = NULL;
     const char *type = NULL;
@@ -308,7 +308,7 @@ bool parse_struct(TSNode root_node, const char *source_code, ParseResult *parse_
                     .type_enum = ARRAY
                 };
                 
-                shput(parse_result->structs, type_name, type_data);
+                shput(parsed_structs->structs, type_name, type_data);
 
                 return true;
             }
@@ -335,7 +335,7 @@ bool parse_struct(TSNode root_node, const char *source_code, ParseResult *parse_
             .type_enum = OBJECT
         };
 
-        shput(parse_result->structs, type_name, type_data);
+        shput(parsed_structs->structs, type_name, type_data);
 
         return true;
     }
@@ -346,14 +346,14 @@ bool parse_struct(TSNode root_node, const char *source_code, ParseResult *parse_
 
 void struct_match_handler(void *user_data, const char *source_code, TSQuery *query, TSQueryMatch match)
 {
-    ParseResult *parse_result = (ParseResult *)user_data;
+    ParsedStructs *parsed_structs = (ParsedStructs *)user_data;
 
     for (unsigned i = 0; i < match.capture_count; i++)
     {
         TSQueryCapture capture = match.captures[i];
 
         char error[256];
-        if(!parse_struct(capture.node, source_code, parse_result, error))
+        if(!parse_struct(capture.node, source_code, parsed_structs, error))
         {
             perror(error);
         }
@@ -367,9 +367,13 @@ void parse_structs(const char *source_code, ParseResult *parse_result, const cha
     ts_parser_set_language(parser, tree_sitter_c());
     TSTree *tree = ts_parser_parse_string(parser, NULL, source_code, strlen(source_code));
 
-    if(run_query_from_file(parse_result, "queries\\generate_parser.query", source_code, ts_tree_root_node(tree), struct_match_handler))
+    ParsedStructs parsed_structs = {0};
+
+    sh_new_arena(parsed_structs.structs);
+
+    if(run_query_from_file(&parsed_structs.structs, "queries\\generate_parser.query", source_code, ts_tree_root_node(tree), struct_match_handler))
     {
-        shput(parse_result->file_paths, file, true);
+        shput(parse_result->files, file, parsed_structs);
     }
 
     ts_tree_delete(tree);

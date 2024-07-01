@@ -18,13 +18,9 @@ int main(int argc, char *argv[])
     }
 
     const char *header_dir = argv[1];
-    ParseResult result = {
-        .structs = NULL,
-        .file_paths = NULL
-    };
+    ParseResult result = {0};
 
-    sh_new_arena(result.structs);
-    sh_new_arena(result.file_paths);
+    sh_new_arena(result.files);
 
     parse_headers(header_dir, &result);
 
@@ -32,8 +28,7 @@ int main(int argc, char *argv[])
     
     generate_parser_code(result);
     
-    shfree(result.structs);
-    shfree(result.file_paths);
+    shfree(result.files);
 
     return 0;
 }

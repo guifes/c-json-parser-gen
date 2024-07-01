@@ -40,16 +40,19 @@ typedef struct
     TypeData value;
 } StructHash;
 
-typedef struct
-{
-    char *key;
-    bool value;
-} FilePathHash;
+typedef struct {
+    StructHash *structs;
+} ParsedStructs;
 
 typedef struct
 {
-    StructHash *structs;
-    FilePathHash *file_paths;
+    char *key;
+    ParsedStructs value;
+} FileStructsMap;
+
+typedef struct
+{
+    FileStructsMap *files;
 } ParseResult;
 
 void parse_headers(const char *path, ParseResult *parse_result);

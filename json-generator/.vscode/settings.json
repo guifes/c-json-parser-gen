@@ -10,6 +10,12 @@
         "windows.h": "c",
         "initializer_list": "c",
         "xutility": "c",
-        "utility": "c"
+        "utility": "c",
+        "algorithm": "c",
+        "optional": "c",
+        "type_traits": "c",
+        "xtr1common": "c",
+        "stdlib.h": "c",
+        "ldtk.h": "c"
     }
 }

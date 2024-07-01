@@ -11,7 +11,6 @@ SRC_DIR := $(WORKSPACE_FOLDER)/src
 INCLUDE_DIR := $(WORKSPACE_FOLDER)/include
 TREE_SITTER_DIR := $(WORKSPACE_FOLDER)/../tree-sitter
 TESTS_DIR := $(WORKSPACE_FOLDER)/tests
-OSX_LIB_DIR := $(WORKSPACE_FOLDER)/lib/osx
 
 # Compiler and linker
 ifeq ($(OS),Windows_NT)
@@ -64,7 +63,8 @@ TESTS_ARGS := -g \
 # OS-specific settings
 ifeq ($(OS),Windows_NT)
     OUTPUT := $(BUILD_DIR)\json-generator.exe
-    PLATFORM_ARGS := -Llib\windows \
+    PLATFORM_ARGS := -L..\tree-sitter \
+                     -L..\tree-sitter-c \
                      -ltree-sitter \
                      -ltree-sitter-c \
     
@@ -73,9 +73,10 @@ else
     UNAME_S := $(shell uname -s)
     ifeq ($(UNAME_S),Darwin)
         OUTPUT := $(BUILD_DIR)/json-generator
-        PLATFORM_ARGS := -L$(OSX_LIB_DIR) \
+        PLATFORM_ARGS := -L../tree-sitter \
+                         -L../tree-sitter-c \
                          -ltree-sitter \
-                         -Wl,-rpath,$(OSX_LIB_DIR)
+                         -Wl
         MKDIR := mkdir -p $(BUILD_DIR)
     else
         $(error Unsupported OS)
